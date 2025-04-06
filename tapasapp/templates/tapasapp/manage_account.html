@@ -14,20 +14,20 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-3">
+                <div class="col-4">
                     <form action="{% url 'change_password' user.id %}" method="get">
-                        <button type="submit" class="btn-success">Change Password</button>
+                        <button type="submit" class="btn btn-success">Change Password</button>
                     </form>
                 </div>
-                <div class="col-3">
+                <div class="col-4">
                     <form action="{% url 'delete_account' user.id %}" method="post">
                         {% csrf_token %}
-                        <button type="submit" class="btn-danger">Delete Account</button>
+                        <button type="submit" class="btn btn-danger">Delete Account</button>
                     </form>
                 </div>
-                <div class="col-3">
+                <div class="col-4">
                     <form action="{% url 'basic_list' user.id %}" method="get">
-                        <button type="submit" class="btn-secondary">Back</button>
+                        <button type="submit" class="btn btn-secondary">Back</button>
                     </form>
                 </div>
             </div>

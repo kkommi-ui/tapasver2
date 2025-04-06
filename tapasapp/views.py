@@ -44,10 +44,10 @@ def login(request):
                 request.session["user_id"] = user.id
                 return redirect("basic_list", pk=user.id)
             else:
-                messages.error(request, "Invalid Password")
+                messages.error(request, "Invalid Login")
                 return redirect("login")  
         except Account.DoesNotExist:
-            messages.error(request, "Invalid Username")
+            messages.error(request, "Invalid Login")
             return redirect("login")  
 
     return render(request, "tapasapp/login.html")
@@ -62,7 +62,7 @@ def signup(request):
         password = request.POST.get('password')
 
         if Account.objects.filter(username=username).exists():
-            messages.error(request, "Username already taken.")
+            messages.error(request, "Account already exists")
         else:
             hashed_password = make_password(password)
             new_account = Account.objects.create(username=username, password=hashed_password)
