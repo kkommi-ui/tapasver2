@@ -1,0 +1,16 @@
+{% extends 'tapasapp/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="col-md-6">
+    <h1>Welcome, {{ user.username }}!</h1>
+    <nav>
+        <ul>
+            <li><a href="{% url 'better_menu' %}">View Menu</a></li>
+            <li><a href="{% url 'manage_account' pk=user.id %}">Manage Account</a></li>
+            <li><a href="{% url 'change_password' pk=user.id %}">Change Password</a></li>
+            <li><a href="{% url 'logout' %}">Logout</a></li>
+        </ul>
+    </nav>
+</div>
+{% endblock %}
