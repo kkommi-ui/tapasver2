@@ -41,7 +41,7 @@ def login(request):
         try:
             user = Account.objects.get(username=username)
             if check_password(password, user.password):
-                request.session["user_id"] = user.id
+                request.session["user_id"]
                 return redirect("basic_list", pk=user.id)
             else:
                 messages.error(request, "Invalid Login")
@@ -64,8 +64,8 @@ def signup(request):
         if Account.objects.filter(username=username).exists():
             messages.error(request, "Account already exists")
         else:
-            hashed_password = make_password(password)
-            new_account = Account.objects.create(username=username, password=hashed_password)
+            password = make_password(password)
+            Account.objects.create(username=username, password=password)
             messages.success(request, "Account created successfully!")
             return redirect("login")
 
