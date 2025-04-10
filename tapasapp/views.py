@@ -3,9 +3,14 @@ from .models import Dish, Account
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password, check_password
 
-def better_menu(request):
+def better_menu(request, pk):
     dish_objects = Dish.objects.all()
-    return render(request, 'tapasapp/better_list.html', {'dishes': dish_objects})
+    user_id = request.session.get("user_id")
+    if not user_id:
+        return redirect('login')  
+    user = get_object_or_404(Account, pk=user_id)
+
+    return render(request, 'tapasapp/better_list.html', {'dishes': dish_objects, 'user': user})
 
 def add_menu(request):
     if request.method == "POST":
@@ -22,7 +27,9 @@ def view_detail(request, pk):
 
 def delete_dish(request, pk):
     Dish.objects.filter(pk=pk).delete()
-    return redirect('better_menu')
+    user_id = request.session.get("user_id")
+    return redirect('better_menu', pk=user_id)
+
 
 def update_dish(request, pk):
     if request.method == "POST":
@@ -41,34 +48,43 @@ def login(request):
         try:
             user = Account.objects.get(username=username)
             if check_password(password, user.password):
-                request.session["user_id"]
-                return redirect("basic_list", pk=user.id)
+                request.session["user_id"] = user.id 
+                return redirect("basic_list", pk=user.id) 
             else:
                 messages.error(request, "Invalid Login")
-                return redirect("login")  
+                return redirect("login")
         except Account.DoesNotExist:
             messages.error(request, "Invalid Login")
-            return redirect("login")  
+            return redirect("login")
 
     return render(request, "tapasapp/login.html")
 
+
 def basic_list(request, pk):
-    user = get_object_or_404(Account, pk=pk) 
-    return render(request, 'tapasapp/basic_list.html', {'user': user})
+    dish_objects = Dish.objects.all()
+    user_id = request.session.get("user_id")
+    if not user_id:
+        return redirect('login')  
+    user = get_object_or_404(Account, pk=user_id)
+
+    return render(request, 'tapasapp/better_list.html', {'dishes': dish_objects, 'user': user})
 
 def signup(request):
     if request.method == "POST":
         username = request.POST.get('username')
         password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
 
         if Account.objects.filter(username=username).exists():
             messages.error(request, "Account already exists")
         else:
             password = make_password(password)
-            Account.objects.create(username=username, password=password)
-            messages.success(request, "Account created successfully!")
-            return redirect("login")
-
+            if password != confirm_password:
+                messages.error(request, "New passwords do not match.")
+            else:
+                Account.objects.create(username=username, password=password)
+                messages.success(request, "Account created successfully!")
+                return redirect("login")
     return render(request, "tapasapp/signup.html")
 
 def manage_account(request, pk):
@@ -94,7 +110,7 @@ def change_password(request, pk):
         if new_password != confirm_password:
             messages.error(request, "New passwords do not match.")
             return redirect("change_password", pk=pk)
-
+        
         user.password = make_password(new_password)
         user.save()
         messages.success(request, "Password changed successfully!")
