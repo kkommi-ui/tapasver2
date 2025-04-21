@@ -82,10 +82,6 @@ def manage_account(request, pk):
     return render(request, 'tapasapp/manage_account.html', {'user': user})
 
 def change_password(request, pk):
-    user_id = request.session.get("user_id")
-    if not user_id or int(pk) != user_id:
-        return redirect("login")
-
     user = get_object_or_404(Account, pk=pk)
 
     if request.method == "POST":
